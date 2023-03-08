@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttericon/octicons_icons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:nimbus_client/src/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: FToastBuilder(),
       title: 'Nimbus Client',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -39,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: Colors.lightBlue,
       ),
       body: Row(
         children: [
@@ -67,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             child: IndexedStack(
               index: _selectedIndex,
-              children: [const Text("Infos"), const Text("Settings")],
+              children: [const Text("Infos"), SettingsWidget()],
             ),
           ),
         ],
