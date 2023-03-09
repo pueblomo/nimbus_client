@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttericon/octicons_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:nimbus_client/src/SharedKeys.dart';
+import 'package:nimbus_client/src/widgets/toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -26,17 +28,18 @@ class _SettingsState extends State<SettingsWidget> {
 
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    //ToDo sharedpreferences keys as enum
-    clientNameController.text = prefs.getString('client-name') ?? '';
-    rootFolderController.text = prefs.getString('root-folder') ?? '';
-    serverUrlController.text = prefs.getString('server-url') ?? '';
+    clientNameController.text =
+        prefs.getString(SharedKeys.clientName.name) ?? '';
+    rootFolderController.text =
+        prefs.getString(SharedKeys.rootFolder.name) ?? '';
+    serverUrlController.text = prefs.getString(SharedKeys.serverUrl.name) ?? '';
   }
 
   Future<void> _saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('client-name', clientNameController.text);
-    prefs.setString('root-folder', rootFolderController.text);
-    prefs.setString('server-url', serverUrlController.text);
+    prefs.setString(SharedKeys.clientName.name, clientNameController.text);
+    prefs.setString(SharedKeys.rootFolder.name, rootFolderController.text);
+    prefs.setString(SharedKeys.serverUrl.name, serverUrlController.text);
   }
 
   @override
@@ -45,27 +48,6 @@ class _SettingsState extends State<SettingsWidget> {
     rootFolderController.dispose();
     serverUrlController.dispose();
     super.dispose();
-  }
-
-  //ToDo convert to own dart file with widget
-  Widget createToast(String message) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25.0),
-        color: Colors.greenAccent,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.check),
-          const SizedBox(
-            width: 12.0,
-          ),
-          Text(message),
-        ],
-      ),
-    );
   }
 
   @override
@@ -108,7 +90,10 @@ class _SettingsState extends State<SettingsWidget> {
             onPressed: () {
               _saveSettings();
               fToast.showToast(
-                  child: createToast('Successfully saved'),
+                  child: const ToastWidget(
+                    message: 'Successfully saved',
+                    isSuccess: true,
+                  ),
                   gravity: ToastGravity.BOTTOM_RIGHT,
                   toastDuration: const Duration(seconds: 2));
             },

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fluttericon/octicons_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:nimbus_client/src/settings.dart';
+import 'package:nimbus_client/src/SharedKeys.dart';
+import 'package:nimbus_client/src/services/websocketService.dart';
+import 'package:nimbus_client/src/widgets/settings.dart';
+import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:watcher/watcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +41,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  var websocketService = WebsocketService();
+
+  @override
+  void initState() {
+    super.initState();
+    _runWatcher();
+  }
+
+  void _runWatcher() async {
+    final prefs = await SharedPreferences.getInstance();
+    var path = prefs.getString(SharedKeys.serverUrl.name) ?? '';
+
+    if (path.isNotEmpty) {
+      var watcher = DirectoryWatcher(p.absolute(path));
+      //ToDo handle directory events
+      watcher.events.listen((event) {
+        websocketService.handleFileEvent(event);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
             child: IndexedStack(
               index: _selectedIndex,
-              children: [const Text("Infos"), SettingsWidget()],
+              children: const [Text("Infos"), SettingsWidget()],
             ),
           ),
         ],
